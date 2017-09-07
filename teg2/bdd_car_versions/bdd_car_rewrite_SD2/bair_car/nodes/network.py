@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env pythonsolver
 """
 reed to run roslaunch first, e.g.,
 
@@ -9,8 +9,8 @@ from kzpy3.utils2 import *
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-from nets.squeezenet import SqueezeNet
-
+#from nets.squeezenet import SqueezeNet #BALA: changed this
+from nets.SqueezeNet import SqueezeNet
 
 # ????????
 # Labels
@@ -36,7 +36,7 @@ last_time = 0
 
 verbose = False
 
-nframes = 2 # default superseded by net
+nframes = 10 # default superseded by net
 
 # try:
 weight_file_path = opjh('pytorch_models','epoch6goodnet') #'save_file.weights')#)
@@ -58,7 +58,7 @@ def init_model():
     # Initializes Solver
     solver = SqueezeNet().cuda()
     
-    solver.load_state_dict(save_data['net'])
+    solver.load_state_dict(save_data) # BALA: changed this to remove 'net' key for save_data dict
     solver.eval()
     nframes = solver.N_FRAMES
 
@@ -155,9 +155,6 @@ def format_metadata(raw_metadata):
     metadata = torch.FloatTensor()
     for mode in raw_metadata:
         metadata = torch.cat((torch.FloatTensor(1, 23, 41).fill_(mode), metadata), 0)
-    zero_matrix = torch.FloatTensor(1, 23, 41).zero_()
-    for i in range(122):
-        metadata = torch.cat((zero_matrix, metadata), 0) 
     return metadata.cuda().unsqueeze(0)
 
 #
